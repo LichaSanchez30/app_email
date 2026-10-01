@@ -1,20 +1,4 @@
 import sqlite3
-from pandas import *
-import pandas as pd
-from openpyxl import *
-
-
-ruta = r"C:\Users\LisSanchez\OneDrive - Swiss Medical S.A\Escritorio\facturacion.xlsx"
-
-
-class Excel:
-    def __init__(self,ruta):
-        self.ruta = ruta
-        
-    def leer(self, hoja, columnas):
-        return pd.read_excel(self.ruta, sheet_name=hoja, usecols=columnas)
-
-
 
 
 class DataBase:
@@ -22,7 +6,7 @@ class DataBase:
         self.conexion = sqlite3.connect(nameDB)
         self.cursor = self.conexion.cursor()
 
-    def crearTabla(self):
+    def crear_tabla(self):
         self.cursor.executescript('''
                                         CREATE TABLE IF NOT EXISTS socios(
                                                                             dni     TEXT PRIMARY KEY,
@@ -35,7 +19,14 @@ class DataBase:
                                                                                 nomYApe TEXT,
                                                                                 email   TEXT,
                                                                                 especialidad TEXT
-                                                                                )
+                                                                                );
+                                        CREATE TABLE IF NOT EXISTS ooss (
+                                                                        cuit TEXT PRIMARY KEY,
+                                                                        razon_socia TEXT,
+                                                                        siglas      TEXT,
+                                                                        email       TEXT
+                                                                        );
+                                        
                                     ''')
     
     def cargar_datos(self,tabla, valores):
@@ -46,7 +37,8 @@ class DataBase:
             datos = list(valores.values())
             self.cursor.execute(query, datos)
             self.conexion.commit()
-            return 'Datos cargados Exitosamente'
+            print('Datos cargados Exitosamente')
+        
         except sqlite3.IntegrityError as e:
             return f'Error de integridad: {e}'
         except sqlite3.OperationalError as e:
@@ -108,13 +100,7 @@ class DataBase:
 
 
 
-
-excel = Excel(ruta)
-leerSocios = excel.leer('socios','A:D')
-leerPrestadores = excel.leer('socios','A:D')
-
-
 dataBase = DataBase('facturacion.db')
-socio = dataBase.buscar_por_('prestadores','cuit','12345678')
 
-print(socio)
+
+dataBase.close_dataBase()

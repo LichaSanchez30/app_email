@@ -1,6 +1,7 @@
-diccionario = {'Nombre':'Lisandro','Apellido':'Sanchez'}
+from pathlib import *
 
+url = Path(r'/home/licha-sanchez-30/Escritorio/todasLasFC')
 
-key = "".join(diccionario.keys())
+for fc in url.iterdir():
+    print(fc.suffix)
 
-print(key)
