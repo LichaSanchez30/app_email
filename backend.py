@@ -26,6 +26,20 @@ class DataBase:
                                                                         siglas      TEXT,
                                                                         email       TEXT
                                                                         );
+
+                                        CREATE TABLE IF NOT EXISTS facturas (
+                                                                        cuit_prestador TEXT,
+                                                                        cuit_ooss TEXT NOT NULL,
+                                                                        fecha_fc  TEXT NOT NULL,
+                                                                        tipo_comp TEXT CHECK (tipo_comp IN ('A', 'B', 'C')) NOT NULL,
+                                                                        pto_vta   TEXT NOT NULL,
+                                                                        nro_comp  TEXT NOT NULL,
+                                                                        importe   DECIMAL(12,2) NOT NULL,
+                                                                        cae       TEXT NOT NULL,
+                                                                        periodo   TEXT NOT NULL,
+                                                                        PRIMARY KEY (cuit_prestador, tipo_comp, pto_vta, nro_comp),
+                                                                        FOREING KEY (cuit_prestador) REFERENCES prestadores (cuit)
+                                        )
                                         
                                     ''')
     
@@ -94,13 +108,12 @@ class DataBase:
         else:
             return 'No se encontraron registros para borrar'
 
+    
 
     def close_dataBase(self):
         self.conexion.close()
 
 
 
-dataBase = DataBase('facturacion.db')
 
 
-dataBase.close_dataBase()

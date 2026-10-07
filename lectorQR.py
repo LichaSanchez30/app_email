@@ -16,7 +16,11 @@ dataBase = DataBase('facturacion.db')
 class Gestor_archivos:
     def __init__(self, url):
         self._url_carpeta = Path(url)
-        
+
+    def name_archivo(self):
+        archivos = self._url_carpeta.iterdir()
+        for archivo in archivos:
+            print(archivo.stem.split("_"))
 
 #--- GUARDA TODOS LA DIRECCION DE LOS ARCHIVOS PDF EN UN ARRAY Y LOS RETORNA
     def archivos_pdf(self):
@@ -134,7 +138,7 @@ class Gestionar_todas_las_fc:
                      self.errores[url.name] = 'Error en factura'
             else:
                  self.errores[url.name] = 'No se pudo leer'
-        return datos
+        
         
 
 #--- GUARDA LOS ARCHIVOS CON ERRORES PARA PODER IDENTIFICAR LOS PDF QUE FALLARON
@@ -155,11 +159,14 @@ class Administrar_datos:
         return self.guardar_datos
 
 
-gestionar_todo = Gestionar_todas_las_fc(ruta)
-todasLasFC = gestionar_todo.procesar_todas()
-administrar = Administrar_datos(todasLasFC)
+#gestionar_todo = Gestionar_todas_las_fc(ruta)
+#todasLasFC = gestionar_todo.procesar_todas()
+#administrar = Administrar_datos(todasLasFC)
+#
+#print(administrar.ver_datos())
 
-print(administrar.ver_datos())
+gestor_archivo = Gestor_archivos(ruta)
 
+gestor_archivo.name_archivo()
 
 dataBase.close_dataBase()
