@@ -1,4 +1,7 @@
 import sqlite3
+import pandas as pd 
+import openpyxl as op
+
 
 
 class DataBase:
@@ -22,7 +25,7 @@ class DataBase:
                                                                                 );
                                         CREATE TABLE IF NOT EXISTS ooss (
                                                                         cuit TEXT PRIMARY KEY,
-                                                                        razon_socia TEXT,
+                                                                        razon_social TEXT,
                                                                         siglas      TEXT,
                                                                         email       TEXT
                                                                         );
@@ -30,6 +33,7 @@ class DataBase:
                                         CREATE TABLE IF NOT EXISTS facturas (
                                                                         cuit_prestador TEXT,
                                                                         cuit_ooss TEXT NOT NULL,
+                                                                        dni_socio TEXT NOT NULL,
                                                                         fecha_fc  TEXT NOT NULL,
                                                                         tipo_comp TEXT CHECK (tipo_comp IN ('A', 'B', 'C')) NOT NULL,
                                                                         pto_vta   TEXT NOT NULL,
@@ -38,7 +42,9 @@ class DataBase:
                                                                         cae       TEXT NOT NULL,
                                                                         periodo   TEXT NOT NULL,
                                                                         PRIMARY KEY (cuit_prestador, tipo_comp, pto_vta, nro_comp),
-                                                                        FOREING KEY (cuit_prestador) REFERENCES prestadores (cuit)
+                                                                        FOREIGN KEY (dni_socio) REFERENCES socios (dni)
+                                                                        FOREIGN KEY (cuit_prestador) REFERENCES prestadores (cuit)
+                                                                        FOREIGN KEY (cuit_ooss) REFERENCES ooss (cuit)
                                         )
                                         
                                     ''')
@@ -72,11 +78,13 @@ class DataBase:
     def buscar_por_(self,tabla, param, dato):
         try:
             busqueda = f"SELECT * FROM {tabla} WHERE {param} = ?"
-            resultado = self.cursor.execute(busqueda, (dato,)).fetchone()
+            self.cursor.execute(busqueda, (dato,))
+            resultado = self.cursor.fetchone()
+            columns = [description[0] for description in self.cursor.description]
             if resultado:
-                return resultado
+                return resultado, columns
             else:
-                return f'No hay datos para {param}: {dato}'
+                return None , f'No hay datos para {param}: {dato}'
         except sqlite3.OperationalError as e:
             return f'Error en la busqueda: {e}'
 
@@ -96,7 +104,7 @@ class DataBase:
             return 'No se encontraron registros para actualizar'
 
 
-    def delete(self, tabla, param, valor):
+    def borrar_dato(self, tabla, param, valor):
         delete = f'DELETE FROM {tabla} WHERE {param} = ?'
         self.cursor.execute(delete,(valor, ))
         self.conexion.commit()
@@ -113,7 +121,6 @@ class DataBase:
     def close_dataBase(self):
         self.conexion.close()
 
+    
 
-
-
-
+db = DataBase('facturacion.db')

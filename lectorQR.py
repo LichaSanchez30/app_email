@@ -168,5 +168,3 @@ class Administrar_datos:
 gestor_archivo = Gestor_archivos(ruta)
 
 gestor_archivo.name_archivo()
-
-dataBase.close_dataBase()
